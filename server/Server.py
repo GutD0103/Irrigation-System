@@ -18,7 +18,7 @@ CORS(app)
 FolderVideoPath = "video"
 
 ADAFRUIT_AIO_USERNAME = "GutD"
-ADAFRUIT_AIO_KEY      = ""
+ADAFRUIT_AIO_KEY      = "aio_Nwzq32rUpNpxj5bhqcus2DSRu7Hb"
 feed = ["irrigation"]
 my_scheduler = Scheduler(Database="schedule.db",DataTable="schedule",AIO_feed=feed,AIO_user=ADAFRUIT_AIO_USERNAME,AIO_key=ADAFRUIT_AIO_KEY)
 
@@ -178,7 +178,7 @@ def Add_Task_Everyweeks():
     # CHECK AREA
 
     if not area:
-        return jsonify({'error': {'message': 'List empty'}}), 400
+        return jsonify({'error': {'message': 'Area empty'}}), 400
 
     area = area.split(',')
 
@@ -282,7 +282,7 @@ def Add_Task_Everydays():
     # CHECK AREA
 
     if not area:
-        return jsonify({'error': {'message': 'List empty'}}), 400
+        return jsonify({'error': {'message': 'Area empty'}}), 400
 
     area = area.split(',')
 
@@ -367,7 +367,7 @@ def Add_Task_onetime():
     # CHECK AREA
 
     if not area:
-        return jsonify({'error': {'message': 'List empty'}}), 400
+        return jsonify({'error': {'message': 'Area empty'}}), 400
 
     area = area.split(',')
 
