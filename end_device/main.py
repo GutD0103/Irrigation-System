@@ -136,6 +136,7 @@ def checking_send_success():
         if(rs485.buffer.is_available()):
             data = rs485.buffer.pop()
             if data == 255:
+                print("OKE")
                 return True
             else:
                 print("FAIL")
