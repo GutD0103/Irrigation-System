@@ -1,5 +1,6 @@
 import serial.tools.list_ports
 import time
+from buffer import UtilsBuffer
 
 class RS485Communication:
     def get_port(self):
@@ -22,6 +23,7 @@ class RS485Communication:
         self.baudrate = baudrate
         self.timeout = timeout
         self.serial_connection = serial.Serial(self.port, self.baudrate)
+        self.buffer = UtilsBuffer()
         print(self.serial_connection)
 
     def open_serial_connection(self):
@@ -47,21 +49,15 @@ class RS485Communication:
         else:
             self.processData(data)
         
-
     def read_serial(self):
         bytesToRead = self.serial_connection.inWaiting()
         if (bytesToRead > 0):
-            self.mess = self.mess + self.serial_connection.read(bytesToRead).decode("UTF-8")
-            while ("#" in self.mess) and ("!" in self.mess):
-                start = self.mess.find("!")
-                end = self.mess.find("#")
-                print(self.mess[start:end + 1])
-                self.process_data(self.mess[start:end + 1])
-                if (end == len(self.mess)):
-                    self.mess = ""
-                else:
-                    self.mess = self.mess[end + 1:]
-                    
+            byte = 0
+            while bytesToRead == byte:
+                data = self.serial_connection.read(1)
+                self.buffer.push(data)
+                byte = byte + 1
+        
     def send_data(self,data):
         # print(data)
         self.serial_connection.write((data))

@@ -7,13 +7,12 @@ from rs485 import RS485Communication
 from datetime import datetime
 
 AIO_USERNAME = "GutD"
-AIO_KEY = "aio_TNaU20Pmw9L7x41vHH4ifs3ZKSit"
+AIO_KEY = "aio_yVnr45gjolxtcSO2djmqfdWtQ9K6"
 AIO_FEED_ID = ["irrigation","task","log"]
 
 
 mqtt_client = MyMQTTClient(AIO_USERNAME, AIO_KEY, AIO_FEED_ID)
-rs485 = None
-# rs485 = RS485Communication(baudrate=115200, timeout=1)
+rs485 = RS485Communication(baudrate=9600, timeout=1)
 
 mess = []
 
@@ -67,19 +66,7 @@ def myProcessMess(feed_id, payload):
         print(payload)
         mess.append(payload)
 
-def myProcessData(data):
-    data = data.replace("!", "")
-    data = data.replace("#", "")
-    splitData = data.split(":")
-    print(splitData)
-    if splitData[0] == "TEMP":
-        mqtt_client.publish_data("temperature",splitData[1])
-    elif splitData[0] == "LUX":
-        mqtt_client.publish_data("lux",splitData[1])
-    elif splitData[0] == "HUMI":
-        mqtt_client.publish_data("humidity",splitData[1])
-    else:
-        print("we dont have that measurement to publish")
+def myProcessData(buffer):
     pass
 
 pumpin_ON       = [0x07, 0x06, 0x00, 0x00, 0x00, 0xFF, 0xC9, 0xEC]
@@ -139,6 +126,20 @@ def publish_log(time, mess):
     mylog.time = time
     mylog.mess = mess
     mqtt_client.publish_data("log",str(mylog))
+
+def checking_send_success():
+    start_time_sys = time.time()
+    while 1:
+        if(time.time() - start_time_sys > 3):
+            print("TIMEOUT")
+            return False
+        if(rs485.buffer.is_available()):
+            data = rs485.buffer.pop()
+            if data == 255:
+                return True
+            else:
+                print("FAIL")
+                return  False
 
 def irrigation():
     global state 
@@ -203,7 +204,10 @@ def irrigation():
                  
     elif(state == STATE_MIXER_1):
         if(mixer1 != 0):
-            # rs485.send_data(mixer1_ON)
+            rs485.send_data(mixer1_ON)
+            if not checking_send_success():
+                return
+
             print(f"MIXER 1 START IN {mixer1}")
             scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = mixer1*10 , PERIOD = 0)
             start_time_sys = time.time()
@@ -215,10 +219,12 @@ def irrigation():
 
 
     elif (state == STATE_WAIT_FOR_MIXER_1):
-        
 
         if(flag):
-            # rs485.send_data(mixer1_OFF)
+            rs485.send_data(mixer1_OFF)
+            if not checking_send_success():
+                return
+            
             print("MIXER 1 STOP")
             flag = 0
             publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Mixer 1 stops operating")
@@ -230,7 +236,9 @@ def irrigation():
 
 
         if(mixer2 != 0):
-            # rs485.send_data(mixer2_ON)
+            rs485.send_data(mixer2_ON)
+            if not checking_send_success():
+                return
             print(f"MIXER 2 START IN {mixer2}")
             scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = mixer2*10 , PERIOD = 0)
             start_time_sys = time.time()
@@ -246,7 +254,9 @@ def irrigation():
 
         if(flag):
             print("MIXER 2 STOP")
-            # rs485.send_data(mixer2_OFF)
+            rs485.send_data(mixer2_OFF)
+            if not checking_send_success():
+                return
             flag = 0
             publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Mixer 2 stops operating")
             state = STATE_MIXER_3
@@ -257,7 +267,9 @@ def irrigation():
 
 
         if(mixer3 != 0):
-            # rs485.send_data(mixer3_ON)
+            rs485.send_data(mixer3_ON)
+            if not checking_send_success():
+                return
             print(f"MIXER 3 START IN {mixer3}")
             scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = mixer3*10 , PERIOD = 0)
             start_time_sys = time.time()
@@ -272,7 +284,9 @@ def irrigation():
 
 
         if(flag):
-            # rs485.send_data(mixer3_OFF)
+            rs485.send_data(mixer3_OFF)
+            if not checking_send_success():
+                return
             print("MIXER 3 STOP")
             flag = 0
             publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Mixer 3 stops operating")
@@ -281,7 +295,9 @@ def irrigation():
         myprogress.mixer3_percent = round(((time.time() - start_time_sys) / mixer3)*100)
 
     elif (state == STATE_PUMP_IN):
-        # rs485.send_data(pumpin_ON)
+        rs485.send_data(pumpin_ON)
+        if not checking_send_success():
+                return
         print("PUMP IN START")
         scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = 100 , PERIOD = 0)
         state = STATE_WAIT_FOR_PUMP_IN
@@ -291,7 +307,9 @@ def irrigation():
 
 
         if(flag):
-            # rs485.send_data(pumpin_OFF)
+            rs485.send_data(pumpin_OFF)
+            if not checking_send_success():
+                return
             print("PUMP IN STOP")
             flag = 0
             state = STATE_SELECTED
@@ -301,20 +319,28 @@ def irrigation():
         
 
         if(area1):
-            # rs485.send_data(area1_ON)
+            rs485.send_data(area1_ON)
+            if not checking_send_success():
+                return
             print("SELECT AREA 1")
             pass
         if(area2):
-            # rs485.send_data(area2_ON)
+            rs485.send_data(area2_ON)
+            if not checking_send_success():
+                return
             print("SELECT AREA 2")
             pass
         if(area3):
-            # rs485.send_data(area3_ON)
+            rs485.send_data(area3_ON)
+            if not checking_send_success():
+                return
             print("SELECT AREA 3")
             pass
         
         print(f"PUMP OUT START IN {duration}")
-        # rs485.send_data(pumpout_ON)
+        rs485.send_data(pumpout_ON)
+        if not checking_send_success():
+                return
         start_time_sys = time.time()
         publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Start watering")
         myprogress.current_task = "pump out"
@@ -327,10 +353,26 @@ def irrigation():
         myprogress.pumpout  = round(((time.time() - start_time_sys) / (duration / 10)) * 100)
 
         if(flag):
-            # rs485.send_data(area1_OFF)
-            # rs485.send_data(area2_OFF)
-            # rs485.send_data(area3_OFF)
-            # rs485.send_data(pumpout_OFF)
+            rs485.send_data(area1_OFF)
+
+            if not checking_send_success():
+                return
+            
+            rs485.send_data(area2_OFF)
+
+            if not checking_send_success():
+                return
+            
+            rs485.send_data(area3_OFF)
+
+            if not checking_send_success():
+                return
+            
+            rs485.send_data(pumpout_OFF)
+
+            if not checking_send_success():
+                return
+            
             publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Stop watering")
             print("PUMP OUT STOP")
             mycycle += 1
