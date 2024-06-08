@@ -69,6 +69,31 @@ def myProcessMess(feed_id, payload):
 def myProcessData(buffer):
     pass
 
+relay_ON = [
+    [1, 6, 0, 0, 0, 255, 201, 138   ],
+    [2, 6, 0, 0, 0, 255, 201, 185   ],
+    [3, 6, 0, 0, 0, 255, 200, 104   ],
+    [4, 6, 0, 0, 0, 255, 201, 223   ],
+    [5, 6, 0, 0, 0, 255, 200, 14    ],
+    [6, 6, 0, 0, 0, 255, 200, 61    ],
+    [7, 6, 0, 0, 0, 255, 201, 236   ],
+    [8, 6, 0, 0, 0, 255, 201, 19    ]
+]
+relay_OFF = [
+    [1, 6, 0, 0, 0, 0, 137, 202 ],
+    [2, 6, 0, 0, 0, 0, 137, 249 ],
+    [3, 6, 0, 0, 0, 0, 136, 40  ],
+    [4, 6, 0, 0, 0, 0, 137, 159 ],
+    [5, 6, 0, 0, 0, 0, 136, 78  ],
+    [6, 6, 0, 0, 0, 0, 136, 125 ],
+    [7, 6, 0, 0, 0, 0, 137, 172 ],
+    [8, 6, 0, 0, 0, 0, 137, 83  ]
+]
+
+soil_temperature = [10, 3, 0, 6, 0, 1, 101, 112]
+soil_humidity = [10, 3, 0, 7, 0, 1, 52, 176]
+distance1_ON = [9, 3, 0, 5, 0, 1, 149, 67]
+distance2_ON = [12, 3, 0, 5, 0, 1, 149, 22]
 pumpin_ON       = [0x07, 0x06, 0x00, 0x00, 0x00, 0xFF, 0xC9, 0xEC]
 pumpin_OFF      = [0x07, 0x06, 0x00, 0x00, 0x00, 0x00, 0x89, 0xAC]
 pumpout_ON      = [0x08, 0x06, 0x00, 0x00, 0x00, 0xFF, 0xC9, 0x13]
@@ -392,12 +417,13 @@ def main():
     #mqtt init
     mqtt_client.start()
 
-    scheduler.SCH_Add_Task(pFunction = publish_state, DELAY = 5*10 , PERIOD = 10*10)
+    scheduler.SCH_Add_Task(pFunction = publish_state, DELAY = 5*10 , PERIOD = 7.5*10)
 
 
     while True:
         scheduler.SCH_Update()
         scheduler.SCH_Dispatch_Tasks()
+        rs485.read_serial()
         irrigation()
         time.sleep(0.1)
     

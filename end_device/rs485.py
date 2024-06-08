@@ -14,7 +14,7 @@ class RS485Communication:
                 splitPort = strPort.split(" ")
                 commPort = (splitPort[0])
                 
-        return commPort
+        return "/dev/ttyUSB0"
 
     def __init__(self, baudrate=115200, timeout=1):
         self.mess = ""
