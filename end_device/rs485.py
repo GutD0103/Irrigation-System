@@ -13,7 +13,7 @@ class RS485Communication:
                 splitPort = strPort.split(" ")
                 commPort = (splitPort[0])
                 
-        return "COM4"
+        return commPort
 
     def __init__(self, baudrate=115200, timeout=1):
         self.mess = ""
@@ -52,7 +52,6 @@ class RS485Communication:
         bytesToRead = self.serial_connection.inWaiting()
         if (bytesToRead > 0):
             self.mess = self.mess + self.serial_connection.read(bytesToRead).decode("UTF-8")
-            
             while ("#" in self.mess) and ("!" in self.mess):
                 start = self.mess.find("!")
                 end = self.mess.find("#")
@@ -64,7 +63,8 @@ class RS485Communication:
                     self.mess = self.mess[end + 1:]
                     
     def send_data(self,data):
-        self.serial_connection.write(str(data).encode())
+        # print(data)
+        self.serial_connection.write((data))
 
 if __name__ == "__main__":
     pass

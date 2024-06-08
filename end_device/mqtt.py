@@ -39,6 +39,7 @@ class MyMQTTClient:
         self.client.loop_background()
 
     def publish_data(self, topic,data):
+        print(f"Publish topic: {topic}")
         self.client.publish(topic, data)
 
 if __name__ == "__main__":
