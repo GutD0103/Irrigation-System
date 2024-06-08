@@ -7,7 +7,7 @@ from rs485 import RS485Communication
 from datetime import datetime
 
 AIO_USERNAME = "GutD"
-AIO_KEY = "aio_yVnr45gjolxtcSO2djmqfdWtQ9K6"
+AIO_KEY = ""
 AIO_FEED_ID = ["irrigation","task","log"]
 
 
