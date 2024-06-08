@@ -53,9 +53,10 @@ class RS485Communication:
         bytesToRead = self.serial_connection.inWaiting()
         if (bytesToRead > 0):
             byte = 0
-            while bytesToRead == byte:
+            while bytesToRead > byte:
                 data = self.serial_connection.read(1)
                 self.buffer.push(data)
+                print(data)
                 byte = byte + 1
         
     def send_data(self,data):
