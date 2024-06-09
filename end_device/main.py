@@ -158,11 +158,13 @@ def checking_send_success(start_time_sys, value):
         print("TIMEOUT")
         return -1
     if(rs485.buffer.is_available()):
+        value_t = value[:6]
         data = rs485.buffer.pop()
         data_array = [b for b in data]
-        print(data_array)
-        print(value)
-        if data_array == value:
+        data_t = data_array[:6]
+        print(data_t)
+        print(value_t)
+        if value_t == data_t:
             return 1
         return -1
     
