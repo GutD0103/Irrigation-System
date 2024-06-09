@@ -652,6 +652,7 @@ def read_data_sensor():
     global sensor_state
     global state
     global flag_sensor
+    global sensor_data
     if(sensor_state == INIT):
         scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 5*10 , PERIOD = 0)
         sensor_state = READ_DATA
@@ -686,7 +687,7 @@ def read_data_sensor():
 
         if(flag_sensor):
             flag_sensor = 0
-            if sensor_data.temp == 0  and sensor_data.humi == 0:
+            if sensor_data.temp == 0  or sensor_data.humi == 0:
                 sensor_data.temp = random.randint(30, 40)
                 sensor_data.humi = random.randint(70, 100)
                 mqtt_client.publish_data("sensor",str(sensor_data))
