@@ -7,7 +7,7 @@ from rs485 import RS485Communication
 from datetime import datetime
 
 AIO_USERNAME = "GutD"
-AIO_KEY = ""
+AIO_KEY = "aio_WzZl46E20VaLoLmpTncxAD2fIljg"
 AIO_FEED_ID = ["irrigation","task","log"]
 
 
@@ -127,6 +127,7 @@ STATE_SELECTED =            8
 STATE_PUMP_OUT =            9
 
 state = STATE_IDLE
+flag_send = 0
 flag = 0
 mixer1 = 100
 mixer2 = 100
@@ -152,25 +153,23 @@ def publish_log(time, mess):
     mylog.mess = mess
     mqtt_client.publish_data("log",str(mylog))
 
-def checking_send_success():
-    start_time_sys = time.time()
-    while 1:
-        if(time.time() - start_time_sys > 10):
-            print("TIMEOUT")
-            return False
-        if(rs485.buffer.is_available()):
-            data = rs485.buffer.pop()
-            print(data)
-            print(data[rs485.buffer.size_of_object - 4])
-            print(data[rs485.buffer.size_of_object - 3])
-            value = data[rs485.buffer.size_of_object - 4] * 256 + data[rs485.buffer.size_of_object - 3]
-            if(value > 0):
-                return True
-            return False
+def checking_send_success(start_time_sys, value):
+    if(time.time() - start_time_sys > 10):
+        print("TIMEOUT")
+        return -1
+    if(rs485.buffer.is_available()):
+        data = rs485.buffer.pop()
+        print(data)
+        if data == value:
+            return 1
+        return -1
+    
+    return 0
 
 def irrigation():
     global state 
     global flag 
+    global flag_send
     global mixer1 
     global mixer2 
     global mixer3 
@@ -228,13 +227,24 @@ def irrigation():
                 myprogress.mixer3_percent = 0
 
             myprogress.pumpout = 0
-                 
+            flag_send = 1
     elif(state == STATE_MIXER_1):
         if(mixer1 != 0):
-            rs485.send_data(mixer1_ON)
-            if not checking_send_success():
+            if flag_send:
+                rs485.send_data(mixer1_ON)
+                start_time_sys = time.time()
+                flag_send = 0
                 return
-
+            
+            if not flag_send:
+                if checking_send_success(start_time_sys,mixer1_ON) == -1: #send fail
+                    flag_send = 1
+                    return
+                elif checking_send_success(start_time_sys,mixer1_ON) == 1: #send success
+                    flag_send = 1
+                elif checking_send_success(start_time_sys,mixer1_ON) == 0: # not getting response
+                    return
+                
             print(f"MIXER 1 START IN {mixer1}")
             scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = mixer1*10 , PERIOD = 0)
             start_time_sys = time.time()
@@ -248,9 +258,20 @@ def irrigation():
     elif (state == STATE_WAIT_FOR_MIXER_1):
 
         if(flag):
-            rs485.send_data(mixer1_OFF)
-            if not checking_send_success():
+            if flag_send:
+                rs485.send_data(mixer1_OFF)
+                start_time_sys = time.time()
+                flag_send = 0
                 return
+            
+            if not flag_send:
+                if checking_send_success(start_time_sys,mixer1_OFF) == -1: #send fail
+                    flag_send = 1
+                    return
+                elif checking_send_success(start_time_sys,mixer1_OFF) == 1: #send success
+                    flag_send = 1
+                elif checking_send_success(start_time_sys,mixer1_OFF) == 0: # not getting response
+                    return
             
             print("MIXER 1 STOP")
             flag = 0
@@ -263,9 +284,21 @@ def irrigation():
 
 
         if(mixer2 != 0):
-            rs485.send_data(mixer2_ON)
-            if not checking_send_success():
+            if flag_send:
+                rs485.send_data(mixer2_ON)
+                start_time_sys = time.time()
+                flag_send = 0
                 return
+            
+            if not flag_send:
+                if checking_send_success(start_time_sys,mixer2_ON) == -1: #send fail
+                    flag_send = 1
+                    return
+                elif checking_send_success(start_time_sys,mixer2_ON) == 1: #send success
+                    flag_send = 1
+                elif checking_send_success(start_time_sys,mixer2_ON) == 0: # not getting response
+                    return
+        
             print(f"MIXER 2 START IN {mixer2}")
             scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = mixer2*10 , PERIOD = 0)
             start_time_sys = time.time()
@@ -280,10 +313,22 @@ def irrigation():
 
 
         if(flag):
-            print("MIXER 2 STOP")
-            rs485.send_data(mixer2_OFF)
-            if not checking_send_success():
+            if flag_send:
+                rs485.send_data(mixer2_OFF)
+                start_time_sys = time.time()
+                flag_send = 0
                 return
+            
+            if not flag_send:
+                if checking_send_success(start_time_sys,mixer2_OFF) == -1: #send fail
+                    flag_send = 1
+                    return
+                elif checking_send_success(start_time_sys,mixer2_OFF) == 1: #send success
+                    flag_send = 1
+                elif checking_send_success(start_time_sys,mixer2_OFF) == 0: # not getting response
+                    return
+                
+            print("MIXER 2 STOP")
             flag = 0
             publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Mixer 2 stops operating")
             state = STATE_MIXER_3
@@ -294,9 +339,21 @@ def irrigation():
 
 
         if(mixer3 != 0):
-            rs485.send_data(mixer3_ON)
-            if not checking_send_success():
+            if flag_send:
+                rs485.send_data(mixer3_ON)
+                start_time_sys = time.time()
+                flag_send = 0
                 return
+            
+            if not flag_send:
+                if checking_send_success(start_time_sys,mixer3_ON) == -1: #send fail
+                    flag_send = 1
+                    return
+                elif checking_send_success(start_time_sys,mixer3_ON) == 1: #send success
+                    flag_send = 1
+                elif checking_send_success(start_time_sys,mixer3_ON) == 0: # not getting response
+                    return
+                
             print(f"MIXER 3 START IN {mixer3}")
             scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = mixer3*10 , PERIOD = 0)
             start_time_sys = time.time()
@@ -311,9 +368,21 @@ def irrigation():
 
 
         if(flag):
-            rs485.send_data(mixer3_OFF)
-            if not checking_send_success():
+            if flag_send:
+                rs485.send_data(mixer3_OFF)
+                start_time_sys = time.time()
+                flag_send = 0
                 return
+            
+            if not flag_send:
+                if checking_send_success(start_time_sys,mixer3_OFF) == -1: #send fail
+                    flag_send = 1
+                    return
+                elif checking_send_success(start_time_sys,mixer3_OFF) == 1: #send success
+                    flag_send = 1
+                elif checking_send_success(start_time_sys,mixer3_OFF) == 0: # not getting response
+                    return
+                
             print("MIXER 3 STOP")
             flag = 0
             publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Mixer 3 stops operating")
@@ -322,9 +391,20 @@ def irrigation():
         myprogress.mixer3_percent = round(((time.time() - start_time_sys) / mixer3)*100)
 
     elif (state == STATE_PUMP_IN):
-        rs485.send_data(pumpin_ON)
-        if not checking_send_success():
+        if flag_send:
+            rs485.send_data(pumpin_ON)
+            start_time_sys = time.time()
+            flag_send = 0
+            return
+        if not flag_send:
+            if checking_send_success(start_time_sys,pumpin_ON) == -1: #send fail
+                flag_send = 1
                 return
+            elif checking_send_success(start_time_sys,pumpin_ON) == 1: #send success
+                flag_send = 1
+            elif checking_send_success(start_time_sys,pumpin_ON) == 0: # not getting response
+                return
+            
         print("PUMP IN START")
         scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = 100 , PERIOD = 0)
         state = STATE_WAIT_FOR_PUMP_IN
@@ -334,9 +414,20 @@ def irrigation():
 
 
         if(flag):
-            rs485.send_data(pumpin_OFF)
-            if not checking_send_success():
+            if flag_send:
+                rs485.send_data(pumpin_OFF)
+                start_time_sys = time.time()
+                flag_send = 0
                 return
+            if not flag_send:
+                if checking_send_success(start_time_sys,pumpin_OFF) == -1: #send fail
+                    flag_send = 1
+                    return
+                elif checking_send_success(start_time_sys,pumpin_OFF) == 1: #send success
+                    flag_send = 1
+                elif checking_send_success(start_time_sys,pumpin_OFF) == 0: # not getting response
+                    return
+                
             print("PUMP IN STOP")
             flag = 0
             state = STATE_SELECTED
@@ -345,30 +436,71 @@ def irrigation():
     elif (state == STATE_SELECTED):
         
 
-        if(area1):
-            rs485.send_data(area1_ON)
-            if not checking_send_success():
+        if(area1 > 0):
+            if flag_send:
+                rs485.send_data(area1_ON)
+                start_time_sys = time.time()
+                flag_send = 0
                 return
+            if not flag_send:
+                if checking_send_success(start_time_sys,area1_ON) == -1: #send fail
+                    flag_send = 1
+                    return
+                elif checking_send_success(start_time_sys,area1_ON) == 1: #send success
+                    flag_send = 1
+                elif checking_send_success(start_time_sys,area1_ON) == 0: # not getting response
+                    return
+            
             print("SELECT AREA 1")
-            pass
-        if(area2):
-            rs485.send_data(area2_ON)
-            if not checking_send_success():
+            area1 = -1
+        if(area2 > 0):
+            if flag_send:
+                rs485.send_data(area2_ON)
+                start_time_sys = time.time()
+                flag_send = 0
                 return
+            if not flag_send:
+                if checking_send_success(start_time_sys,area2_ON) == -1: #send fail
+                    flag_send = 1
+                    return
+                elif checking_send_success(start_time_sys,area2_ON) == 1: #send success
+                    flag_send = 1
+                elif checking_send_success(start_time_sys,area2_ON) == 0: # not getting response
+                    return
             print("SELECT AREA 2")
-            pass
-        if(area3):
-            rs485.send_data(area3_ON)
-            if not checking_send_success():
+            area2 = -1
+        if(area3 > 0):
+            if flag_send:
+                rs485.send_data(area3_ON)
+                start_time_sys = time.time()
+                flag_send = 0
                 return
+            if not flag_send:
+                if checking_send_success(start_time_sys,area3_ON) == -1: #send fail
+                    flag_send = 1
+                    return
+                elif checking_send_success(start_time_sys,area3_ON) == 1: #send success
+                    flag_send = 1
+                elif checking_send_success(start_time_sys,area3_ON) == 0: # not getting response
+                    return
             print("SELECT AREA 3")
-            pass
+            area3 = -1
         
         print(f"PUMP OUT START IN {duration}")
-        rs485.send_data(pumpout_ON)
-        if not checking_send_success():
+        if flag_send:
+            rs485.send_data(pumpout_ON)
+            start_time_sys = time.time()
+            flag_send = 0
+            return
+        if not flag_send:
+            if checking_send_success(start_time_sys,pumpout_ON) == -1: #send fail
+                flag_send = 1
                 return
-        start_time_sys = time.time()
+            elif checking_send_success(start_time_sys,pumpout_ON) == 1: #send success
+                flag_send = 1
+            elif checking_send_success(start_time_sys,pumpout_ON) == 0: # not getting response
+                return
+            
         publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Start watering")
         myprogress.current_task = "pump out"
         state = STATE_PUMP_OUT
@@ -380,25 +512,73 @@ def irrigation():
         myprogress.pumpout  = round(((time.time() - start_time_sys) / (duration / 10)) * 100)
 
         if(flag):
-            rs485.send_data(area1_OFF)
+            if area1 == -1:
+                if flag_send:
+                    rs485.send_data(area1_OFF)
+                    start_time_sys = time.time()
+                    flag_send = 0
+                    return
+                if not flag_send:
+                    if checking_send_success(start_time_sys,area1_OFF) == -1: #send fail
+                        flag_send = 1
+                        return
+                    elif checking_send_success(start_time_sys,area1_OFF) == 1: #send success
+                        flag_send = 1
+                    elif checking_send_success(start_time_sys,area1_OFF) == 0: # not getting response
+                        return
+                area1 = 1
+                print("STOP SELECT AREA 1")
 
-            if not checking_send_success():
-                return
-            
-            rs485.send_data(area2_OFF)
 
-            if not checking_send_success():
-                return
-            
-            rs485.send_data(area3_OFF)
+            if area2 == -1:
+                if flag_send:
+                    rs485.send_data(area2_OFF)
+                    start_time_sys = time.time()
+                    flag_send = 0
+                    return
+                if not flag_send:
+                    if checking_send_success(start_time_sys,area2_OFF) == -1: #send fail
+                        flag_send = 1
+                        return
+                    elif checking_send_success(start_time_sys,area2_OFF) == 1: #send success
+                        flag_send = 1
+                    elif checking_send_success(start_time_sys,area2_OFF) == 0: # not getting response
+                        return
+                area2 = 1
+                print("STOP SELECT AREA 2")
 
-            if not checking_send_success():
-                return
-            
-            rs485.send_data(pumpout_OFF)
+            if area3 == -1:
+                if flag_send:
+                    rs485.send_data(area3_OFF)
+                    start_time_sys = time.time()
+                    flag_send = 0
+                    return
+                if not flag_send:
+                    if checking_send_success(start_time_sys,area3_OFF) == -1: #send fail
+                        flag_send = 1
+                        return
+                    elif checking_send_success(start_time_sys,area3_OFF) == 1: #send success
+                        flag_send = 1
+                    elif checking_send_success(start_time_sys,area3_OFF) == 0: # not getting response
+                        return
+                area3 = 1
+                print("STOP SELECT AREA 3")
 
-            if not checking_send_success():
+
+            if flag_send:
+                rs485.send_data(pumpout_OFF)
+                start_time_sys = time.time()
+                flag_send = 0
                 return
+            if not flag_send:
+                if checking_send_success(start_time_sys,pumpout_OFF) == -1: #send fail
+                    flag_send = 1
+                    return
+                elif checking_send_success(start_time_sys,pumpout_OFF) == 1: #send success
+                    flag_send = 1
+                elif checking_send_success(start_time_sys,pumpout_OFF) == 0: # not getting response
+                    return
+                
             
             publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Stop watering")
             print("PUMP OUT STOP")

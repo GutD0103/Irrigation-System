@@ -23,7 +23,7 @@ class RS485Communication:
         self.baudrate = baudrate
         self.timeout = timeout
         self.serial_connection = serial.Serial(self.port, self.baudrate)
-        self.buffer = UtilsBuffer(size_of_object=7)
+        self.buffer = UtilsBuffer(size_of_object=8)
         print(self.serial_connection)
 
     def open_serial_connection(self):
