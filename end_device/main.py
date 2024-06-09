@@ -160,12 +160,10 @@ def checking_send_success():
             return False
         if(rs485.buffer.is_available()):
             data = rs485.buffer.pop()
-            if data == 255:
-                print("OKE")
+            value = data[rs485.buffer.size_of_object - 4] * 256 + data[rs485.buffer.size_of_object - 3]
+            if(value > 0):
                 return True
-            else:
-                print("FAIL")
-                return  False
+            return False
 
 def irrigation():
     global state 
@@ -238,7 +236,7 @@ def irrigation():
             scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = mixer1*10 , PERIOD = 0)
             start_time_sys = time.time()
             myprogress.current_task = "mixer1"
-            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Mixer 1 starts operating")
+            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Mixer 1 starts operating")
             state = STATE_WAIT_FOR_MIXER_1
         else:
             state = STATE_MIXER_2
@@ -253,7 +251,7 @@ def irrigation():
             
             print("MIXER 1 STOP")
             flag = 0
-            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Mixer 1 stops operating")
+            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Mixer 1 stops operating")
             state = STATE_MIXER_2
 
         myprogress.mixer1_percent = round(((time.time() - start_time_sys) / mixer1) * 100)
@@ -269,7 +267,7 @@ def irrigation():
             scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = mixer2*10 , PERIOD = 0)
             start_time_sys = time.time()
             myprogress.current_task = "mixer2"
-            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Mixer 2 starts operating")
+            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Mixer 2 starts operating")
             state = STATE_WAIT_FOR_MIXER_2
         else:
             state = STATE_MIXER_3
@@ -284,7 +282,7 @@ def irrigation():
             if not checking_send_success():
                 return
             flag = 0
-            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Mixer 2 stops operating")
+            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Mixer 2 stops operating")
             state = STATE_MIXER_3
 
         myprogress.mixer2_percent = round(((time.time() - start_time_sys) / mixer2) * 100)
@@ -299,7 +297,7 @@ def irrigation():
             print(f"MIXER 3 START IN {mixer3}")
             scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = mixer3*10 , PERIOD = 0)
             start_time_sys = time.time()
-            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Mixer 3 starts operating")
+            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Mixer 3 starts operating")
             myprogress.current_task = "mixer3"
             state = STATE_WAIT_FOR_MIXER_3
         else:
@@ -315,7 +313,7 @@ def irrigation():
                 return
             print("MIXER 3 STOP")
             flag = 0
-            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Mixer 3 stops operating")
+            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Mixer 3 stops operating")
             state = STATE_PUMP_IN
 
         myprogress.mixer3_percent = round(((time.time() - start_time_sys) / mixer3)*100)
@@ -368,7 +366,7 @@ def irrigation():
         if not checking_send_success():
                 return
         start_time_sys = time.time()
-        publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Start watering")
+        publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Start watering")
         myprogress.current_task = "pump out"
         state = STATE_PUMP_OUT
         scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = duration , PERIOD = 0)
@@ -399,7 +397,7 @@ def irrigation():
             if not checking_send_success():
                 return
             
-            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), "Stop watering")
+            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Stop watering")
             print("PUMP OUT STOP")
             mycycle += 1
             flag = 0

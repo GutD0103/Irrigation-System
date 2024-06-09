@@ -23,7 +23,7 @@ class RS485Communication:
         self.baudrate = baudrate
         self.timeout = timeout
         self.serial_connection = serial.Serial(self.port, self.baudrate)
-        self.buffer = UtilsBuffer()
+        self.buffer = UtilsBuffer(size_of_object=7)
         print(self.serial_connection)
 
     def open_serial_connection(self):
@@ -51,13 +51,11 @@ class RS485Communication:
         
     def read_serial(self):
         bytesToRead = self.serial_connection.inWaiting()
-        if (bytesToRead > 0):
-            byte = 0
-            while bytesToRead > byte:
-                data = self.serial_connection.read(1)
-                self.buffer.push(data)
-                print(data)
-                byte = byte + 1
+        if (bytesToRead >= self.buffer.size_of_object):
+            bytes = self.serial_connection.read(bytesToRead)
+            data_array = [b for b in bytes]
+            print(data_array)
+            self.buffer.push(data_array)
         
     def send_data(self,data):
         # print(data)
