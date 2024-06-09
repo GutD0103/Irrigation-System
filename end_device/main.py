@@ -670,21 +670,21 @@ def read_data_sensor():
 
     elif(sensor_state == PUBLISH_DATA):
         
-        if rs485.buffer.is_available():
-            print("read data")
-            data = rs485.buffer.pop()
-            data_array = [b for b in data]
-            print(data_array)
-            crc = data_array[-2:]
-            payload_array = data_array[:6]
+        # if rs485.buffer.is_available():
+        #     print("read data")
+        #     data = rs485.buffer.pop()
+        #     data_array = [b for b in data]
+        #     print(data_array)
+        #     crc = data_array[-2:]
+        #     payload_array = data_array[:6]
 
-            if crc != crc16_modbus(payload_array):
-                return
+        #     if crc != crc16_modbus(payload_array):
+        #         return
             
-            if(data_array[:4] == soil_humidity[:4]):
-                sensor_data.humi  = data_array[rs485.buffer.size_of_object - 4] * 256 + data_array[rs485.buffer.size_of_object - 3]
-            if(data_array[:4] == soil_temperature[:4]):
-                sensor_data.temp  = data_array[rs485.buffer.size_of_object - 4] * 256 + data_array[rs485.buffer.size_of_object - 3]
+        #     if(data_array[:4] == soil_humidity[:4]):
+        #         sensor_data.humi  = data_array[rs485.buffer.size_of_object - 4] * 256 + data_array[rs485.buffer.size_of_object - 3]
+        #     if(data_array[:4] == soil_temperature[:4]):
+        #         sensor_data.temp  = data_array[rs485.buffer.size_of_object - 4] * 256 + data_array[rs485.buffer.size_of_object - 3]
             
 
         if(flag_sensor):
