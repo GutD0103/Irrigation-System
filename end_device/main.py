@@ -648,11 +648,13 @@ def crc16_modbus(data: list) -> list:
     return [crc_low, crc_high]  # Trả về mảng chứa byte thấp và byte cao
 
 def read_data_sensor():
+    global sensor_state
+    global state
     if(sensor_state == INIT):
         scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 5*10 , PERIOD = 0)
         sensor_state = READ_DATA
     elif(sensor_state == READ_DATA):
-        if(flag_send):
+        if(flag_sensor):
             flag_sensor = 0
             if(state == STATE_IDLE):
                 rs485.send_data(soil_humidity)
@@ -695,7 +697,7 @@ def main():
     #mqtt init
     mqtt_client.start()
 
-    scheduler.SCH_Add_Task(pFunction = publish_state, DELAY = 5*10 , PERIOD = 7.5*10)
+    #scheduler.SCH_Add_Task(pFunction = publish_state, DELAY = 5*10 , PERIOD = 7.5*10)
 
 
     while True:
