@@ -662,8 +662,8 @@ def read_data_sensor():
         if(flag_sensor):
             flag_sensor = 0
             if(state == STATE_IDLE):
-                rs485.send_data(soil_humidity)
-                rs485.send_data(soil_temperature)
+                # rs485.send_data(soil_humidity)
+                # rs485.send_data(soil_temperature)
                 print("send data")
                 sensor_state = PUBLISH_DATA
             scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 2*10 , PERIOD = 0)
