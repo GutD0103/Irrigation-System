@@ -660,15 +660,17 @@ def read_data_sensor():
             if(state == STATE_IDLE):
                 rs485.send_data(soil_humidity)
                 rs485.send_data(soil_temperature)
+                print("send data")
                 sensor_state = PUBLISH_DATA
             scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 5*10 , PERIOD = 0)
 
     elif(sensor_state == PUBLISH_DATA):
         
         if rs485.buffer.is_available():
+            print("read data")
             data = rs485.buffer.pop()
-            print(data_array)
             data_array = [b for b in data]
+            print(data_array)
             crc = data_array[-2:]
             payload_array = data_array[:6]
 
