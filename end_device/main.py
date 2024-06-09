@@ -138,6 +138,7 @@ area3 = 0
 duration = 0
 cycle = 0
 start_time_sys = time.time()
+start_time_send = 0
 mycycle = 0
 
 mylog = Log()
@@ -153,7 +154,7 @@ def publish_log(time, mess):
     mylog.mess = mess
     mqtt_client.publish_data("log",str(mylog))
 
-def checking_send_success(start_time_sys, value):
+def checking_send_success(start_time_send, value):
     if(time.time() - start_time_sys > 10):
         print("TIMEOUT")
         return -1
@@ -184,6 +185,7 @@ def irrigation():
     global mycycle
     global duration
     global start_time_sys
+    global start_time_send
     global myprogress
     
 
@@ -236,12 +238,12 @@ def irrigation():
         if(mixer1 != 0):
             if flag_send:
                 rs485.send_data(mixer1_ON)
-                start_time_sys = time.time()
+                start_time_send = time.time()
                 flag_send = 0
                 return
             
             if not flag_send:
-                return_v = checking_send_success(start_time_sys,mixer1_ON)
+                return_v = checking_send_success(start_time_send,mixer1_ON)
                 if return_v == -1: #send fail
                     flag_send = 1
                     return
@@ -265,12 +267,12 @@ def irrigation():
         if(flag):
             if flag_send:
                 rs485.send_data(mixer1_OFF)
-                start_time_sys = time.time()
+                start_time_send = time.time()
                 flag_send = 0
                 return
             
             if not flag_send:
-                return_v = checking_send_success(start_time_sys,mixer1_OFF)
+                return_v = checking_send_success(start_time_send,mixer1_OFF)
                 if return_v == -1: #send fail
                     flag_send = 1
                     return
@@ -292,12 +294,12 @@ def irrigation():
         if(mixer2 != 0):
             if flag_send:
                 rs485.send_data(mixer2_ON)
-                start_time_sys = time.time()
+                start_time_send = time.time()
                 flag_send = 0
                 return
             
             if not flag_send:
-                return_v = checking_send_success(start_time_sys,mixer2_ON)
+                return_v = checking_send_success(start_time_send,mixer2_ON)
                 if return_v == -1: #send fail
                     flag_send = 1
                     return
@@ -322,18 +324,18 @@ def irrigation():
         if(flag):
             if flag_send:
                 rs485.send_data(mixer2_OFF)
-                start_time_sys = time.time()
+                start_time_send = time.time()
                 flag_send = 0
                 return
             
             if not flag_send:
-                return_v = checking_send_success(start_time_sys,mixer2_OFF)
-                if return_v(start_time_sys,mixer2_OFF) == -1: #send fail
+                return_v = checking_send_success(start_time_send,mixer2_OFF)
+                if return_v== -1: #send fail
                     flag_send = 1
                     return
-                elif return_v(start_time_sys,mixer2_OFF) == 1: #send success
+                elif return_v == 1: #send success
                     flag_send = 1
-                elif return_v(start_time_sys,mixer2_OFF) == 0: # not getting response
+                elif return_v== 0: # not getting response
                     return
                 
             print("MIXER 2 STOP")
@@ -349,12 +351,12 @@ def irrigation():
         if(mixer3 != 0):
             if flag_send:
                 rs485.send_data(mixer3_ON)
-                start_time_sys = time.time()
+                start_time_send = time.time()
                 flag_send = 0
                 return
             
             if not flag_send:
-                return_v = checking_send_success(start_time_sys,mixer3_ON)
+                return_v = checking_send_success(start_time_send,mixer3_ON)
                 if return_v == -1: #send fail
                     flag_send = 1
                     return
@@ -379,12 +381,12 @@ def irrigation():
         if(flag):
             if flag_send:
                 rs485.send_data(mixer3_OFF)
-                start_time_sys = time.time()
+                start_time_send = time.time()
                 flag_send = 0
                 return
             
             if not flag_send:
-                return_v = checking_send_success(start_time_sys,mixer3_OFF)
+                return_v = checking_send_success(start_time_send,mixer3_OFF)
                 if return_v == -1: #send fail
                     flag_send = 1
                     return
@@ -407,7 +409,7 @@ def irrigation():
             flag_send = 0
             return
         if not flag_send:
-            return_v = checking_send_success(start_time_sys,pumpin_ON)
+            return_v = checking_send_success(start_time_send,pumpin_ON)
             if return_v == -1: #send fail
                 flag_send = 1
                 return
@@ -427,11 +429,11 @@ def irrigation():
         if(flag):
             if flag_send:
                 rs485.send_data(pumpin_OFF)
-                start_time_sys = time.time()
+                start_time_send = time.time()
                 flag_send = 0
                 return
             if not flag_send:
-                return_v = checking_send_success(start_time_sys,pumpin_OFF)
+                return_v = checking_send_success(start_time_send,pumpin_OFF)
                 if return_v == -1: #send fail
                     flag_send = 1
                     return
@@ -451,11 +453,11 @@ def irrigation():
         if(area1 > 0):
             if flag_send:
                 rs485.send_data(area1_ON)
-                start_time_sys = time.time()
+                start_time_send = time.time()
                 flag_send = 0
                 return
             if not flag_send:
-                return_v = checking_send_success(start_time_sys,area1_ON)
+                return_v = checking_send_success(start_time_send,area1_ON)
                 if return_v == -1: #send fail
                     flag_send = 1
                     return
@@ -469,11 +471,11 @@ def irrigation():
         if(area2 > 0):
             if flag_send:
                 rs485.send_data(area2_ON)
-                start_time_sys = time.time()
+                start_time_send = time.time()
                 flag_send = 0
                 return
             if not flag_send:
-                return_v = checking_send_success(start_time_sys,area2_ON)
+                return_v = checking_send_success(start_time_send,area2_ON)
                 if return_v == -1: #send fail
                     flag_send = 1
                     return
@@ -486,11 +488,11 @@ def irrigation():
         if(area3 > 0):
             if flag_send:
                 rs485.send_data(area3_ON)
-                start_time_sys = time.time()
+                start_time_send = time.time()
                 flag_send = 0
                 return
             if not flag_send:
-                return_v = checking_send_success(start_time_sys,area3_ON)
+                return_v = checking_send_success(start_time_send,area3_ON)
                 if return_v == -1: #send fail
                     flag_send = 1
                     return
@@ -508,7 +510,7 @@ def irrigation():
             flag_send = 0
             return
         if not flag_send:
-            return_v = checking_send_success(start_time_sys,pumpout_ON)
+            return_v = checking_send_success(start_time_send,pumpout_ON)
             if return_v == -1: #send fail
                 flag_send = 1
                 return
@@ -535,7 +537,7 @@ def irrigation():
                     flag_send = 0
                     return
                 if not flag_send:
-                    return_v = checking_send_success(start_time_sys,area1_OFF)
+                    return_v = checking_send_success(start_time_send,area1_OFF)
                     if return_v == -1: #send fail
                         flag_send = 1
                         return
@@ -554,7 +556,7 @@ def irrigation():
                     flag_send = 0
                     return
                 if not flag_send:
-                    return_v = checking_send_success(start_time_sys,area2_OFF)
+                    return_v = checking_send_success(start_time_send,area2_OFF)
                     if return_v == -1: #send fail
                         flag_send = 1
                         return
@@ -572,7 +574,7 @@ def irrigation():
                     flag_send = 0
                     return
                 if not flag_send:
-                    return_v = checking_send_success(start_time_sys,area3_OFF)
+                    return_v = checking_send_success(start_time_send,area3_OFF)
                     if return_v == -1: #send fail
                         flag_send = 1
                         return
@@ -586,11 +588,11 @@ def irrigation():
 
             if flag_send:
                 rs485.send_data(pumpout_OFF)
-                start_time_sys = time.time()
+                start_time_send = time.time()
                 flag_send = 0
                 return
             if not flag_send:
-                return_v = checking_send_success(start_time_sys,pumpout_OFF)
+                return_v = checking_send_success(start_time_send,pumpout_OFF)
                 if return_v == -1: #send fail
                     flag_send = 1
                     return
