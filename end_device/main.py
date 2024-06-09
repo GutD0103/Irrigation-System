@@ -241,12 +241,13 @@ def irrigation():
                 return
             
             if not flag_send:
-                if checking_send_success(start_time_sys,mixer1_ON) == -1: #send fail
+                return_v = checking_send_success(start_time_sys,mixer1_ON)
+                if return_v == -1: #send fail
                     flag_send = 1
                     return
-                elif checking_send_success(start_time_sys,mixer1_ON) == 1: #send success
+                elif return_v == 1: #send success
                     flag_send = 1
-                elif checking_send_success(start_time_sys,mixer1_ON) == 0: # not getting response
+                elif return_v == 0: # not getting response
                     return
                 
             print(f"MIXER 1 START IN {mixer1}")
@@ -269,12 +270,13 @@ def irrigation():
                 return
             
             if not flag_send:
-                if checking_send_success(start_time_sys,mixer1_OFF) == -1: #send fail
+                return_v = checking_send_success(start_time_sys,mixer1_OFF)
+                if return_v == -1: #send fail
                     flag_send = 1
                     return
-                elif checking_send_success(start_time_sys,mixer1_OFF) == 1: #send success
+                elif return_v == 1: #send success
                     flag_send = 1
-                elif checking_send_success(start_time_sys,mixer1_OFF) == 0: # not getting response
+                elif return_v == 0: # not getting response
                     return
             
             print("MIXER 1 STOP")
@@ -295,12 +297,13 @@ def irrigation():
                 return
             
             if not flag_send:
-                if checking_send_success(start_time_sys,mixer2_ON) == -1: #send fail
+                return_v = checking_send_success(start_time_sys,mixer2_ON)
+                if return_v == -1: #send fail
                     flag_send = 1
                     return
-                elif checking_send_success(start_time_sys,mixer2_ON) == 1: #send success
+                elif return_v == 1: #send success
                     flag_send = 1
-                elif checking_send_success(start_time_sys,mixer2_ON) == 0: # not getting response
+                elif return_v == 0: # not getting response
                     return
         
             print(f"MIXER 2 START IN {mixer2}")
@@ -324,12 +327,13 @@ def irrigation():
                 return
             
             if not flag_send:
-                if checking_send_success(start_time_sys,mixer2_OFF) == -1: #send fail
+                return_v = checking_send_success(start_time_sys,mixer2_OFF)
+                if return_v(start_time_sys,mixer2_OFF) == -1: #send fail
                     flag_send = 1
                     return
-                elif checking_send_success(start_time_sys,mixer2_OFF) == 1: #send success
+                elif return_v(start_time_sys,mixer2_OFF) == 1: #send success
                     flag_send = 1
-                elif checking_send_success(start_time_sys,mixer2_OFF) == 0: # not getting response
+                elif return_v(start_time_sys,mixer2_OFF) == 0: # not getting response
                     return
                 
             print("MIXER 2 STOP")
@@ -350,12 +354,13 @@ def irrigation():
                 return
             
             if not flag_send:
-                if checking_send_success(start_time_sys,mixer3_ON) == -1: #send fail
+                return_v = checking_send_success(start_time_sys,mixer3_ON)
+                if return_v == -1: #send fail
                     flag_send = 1
                     return
-                elif checking_send_success(start_time_sys,mixer3_ON) == 1: #send success
+                elif return_v == 1: #send success
                     flag_send = 1
-                elif checking_send_success(start_time_sys,mixer3_ON) == 0: # not getting response
+                elif return_v == 0: # not getting response
                     return
                 
             print(f"MIXER 3 START IN {mixer3}")
@@ -379,12 +384,13 @@ def irrigation():
                 return
             
             if not flag_send:
-                if checking_send_success(start_time_sys,mixer3_OFF) == -1: #send fail
+                return_v = checking_send_success(start_time_sys,mixer3_OFF)
+                if return_v == -1: #send fail
                     flag_send = 1
                     return
-                elif checking_send_success(start_time_sys,mixer3_OFF) == 1: #send success
+                elif return_v == 1: #send success
                     flag_send = 1
-                elif checking_send_success(start_time_sys,mixer3_OFF) == 0: # not getting response
+                elif return_v == 0: # not getting response
                     return
                 
             print("MIXER 3 STOP")
@@ -401,12 +407,13 @@ def irrigation():
             flag_send = 0
             return
         if not flag_send:
-            if checking_send_success(start_time_sys,pumpin_ON) == -1: #send fail
+            return_v = checking_send_success(start_time_sys,pumpin_ON)
+            if return_v == -1: #send fail
                 flag_send = 1
                 return
-            elif checking_send_success(start_time_sys,pumpin_ON) == 1: #send success
+            elif return_v == 1: #send success
                 flag_send = 1
-            elif checking_send_success(start_time_sys,pumpin_ON) == 0: # not getting response
+            elif return_v == 0: # not getting response
                 return
             
         print("PUMP IN START")
@@ -424,12 +431,13 @@ def irrigation():
                 flag_send = 0
                 return
             if not flag_send:
-                if checking_send_success(start_time_sys,pumpin_OFF) == -1: #send fail
+                return_v = checking_send_success(start_time_sys,pumpin_OFF)
+                if return_v == -1: #send fail
                     flag_send = 1
                     return
-                elif checking_send_success(start_time_sys,pumpin_OFF) == 1: #send success
+                elif return_v == 1: #send success
                     flag_send = 1
-                elif checking_send_success(start_time_sys,pumpin_OFF) == 0: # not getting response
+                elif return_v == 0: # not getting response
                     return
                 
             print("PUMP IN STOP")
@@ -447,12 +455,13 @@ def irrigation():
                 flag_send = 0
                 return
             if not flag_send:
-                if checking_send_success(start_time_sys,area1_ON) == -1: #send fail
+                return_v = checking_send_success(start_time_sys,area1_ON)
+                if return_v == -1: #send fail
                     flag_send = 1
                     return
-                elif checking_send_success(start_time_sys,area1_ON) == 1: #send success
+                elif return_v == 1: #send success
                     flag_send = 1
-                elif checking_send_success(start_time_sys,area1_ON) == 0: # not getting response
+                elif return_v == 0: # not getting response
                     return
             
             print("SELECT AREA 1")
@@ -464,12 +473,13 @@ def irrigation():
                 flag_send = 0
                 return
             if not flag_send:
-                if checking_send_success(start_time_sys,area2_ON) == -1: #send fail
+                return_v = checking_send_success(start_time_sys,area2_ON)
+                if return_v == -1: #send fail
                     flag_send = 1
                     return
-                elif checking_send_success(start_time_sys,area2_ON) == 1: #send success
+                elif return_v == 1: #send success
                     flag_send = 1
-                elif checking_send_success(start_time_sys,area2_ON) == 0: # not getting response
+                elif return_v == 0: # not getting response
                     return
             print("SELECT AREA 2")
             area2 = -1
@@ -480,12 +490,13 @@ def irrigation():
                 flag_send = 0
                 return
             if not flag_send:
-                if checking_send_success(start_time_sys,area3_ON) == -1: #send fail
+                return_v = checking_send_success(start_time_sys,area3_ON)
+                if return_v == -1: #send fail
                     flag_send = 1
                     return
-                elif checking_send_success(start_time_sys,area3_ON) == 1: #send success
+                elif return_v == 1: #send success
                     flag_send = 1
-                elif checking_send_success(start_time_sys,area3_ON) == 0: # not getting response
+                elif return_v == 0: # not getting response
                     return
             print("SELECT AREA 3")
             area3 = -1
@@ -497,12 +508,13 @@ def irrigation():
             flag_send = 0
             return
         if not flag_send:
-            if checking_send_success(start_time_sys,pumpout_ON) == -1: #send fail
+            return_v = checking_send_success(start_time_sys,pumpout_ON)
+            if return_v == -1: #send fail
                 flag_send = 1
                 return
-            elif checking_send_success(start_time_sys,pumpout_ON) == 1: #send success
+            elif return_v == 1: #send success
                 flag_send = 1
-            elif checking_send_success(start_time_sys,pumpout_ON) == 0: # not getting response
+            elif return_v == 0: # not getting response
                 return
             
         publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Start watering")
@@ -523,12 +535,13 @@ def irrigation():
                     flag_send = 0
                     return
                 if not flag_send:
-                    if checking_send_success(start_time_sys,area1_OFF) == -1: #send fail
+                    return_v = checking_send_success(start_time_sys,area1_OFF)
+                    if return_v == -1: #send fail
                         flag_send = 1
                         return
-                    elif checking_send_success(start_time_sys,area1_OFF) == 1: #send success
+                    elif return_v == 1: #send success
                         flag_send = 1
-                    elif checking_send_success(start_time_sys,area1_OFF) == 0: # not getting response
+                    elif return_v == 0: # not getting response
                         return
                 area1 = 1
                 print("STOP SELECT AREA 1")
@@ -541,12 +554,13 @@ def irrigation():
                     flag_send = 0
                     return
                 if not flag_send:
-                    if checking_send_success(start_time_sys,area2_OFF) == -1: #send fail
+                    return_v = checking_send_success(start_time_sys,area2_OFF)
+                    if return_v == -1: #send fail
                         flag_send = 1
                         return
-                    elif checking_send_success(start_time_sys,area2_OFF) == 1: #send success
+                    elif return_v == 1: #send success
                         flag_send = 1
-                    elif checking_send_success(start_time_sys,area2_OFF) == 0: # not getting response
+                    elif return_v == 0: # not getting response
                         return
                 area2 = 1
                 print("STOP SELECT AREA 2")
@@ -558,12 +572,13 @@ def irrigation():
                     flag_send = 0
                     return
                 if not flag_send:
-                    if checking_send_success(start_time_sys,area3_OFF) == -1: #send fail
+                    return_v = checking_send_success(start_time_sys,area3_OFF)
+                    if return_v == -1: #send fail
                         flag_send = 1
                         return
-                    elif checking_send_success(start_time_sys,area3_OFF) == 1: #send success
+                    elif return_v == 1: #send success
                         flag_send = 1
-                    elif checking_send_success(start_time_sys,area3_OFF) == 0: # not getting response
+                    elif return_v == 0: # not getting response
                         return
                 area3 = 1
                 print("STOP SELECT AREA 3")
@@ -575,12 +590,13 @@ def irrigation():
                 flag_send = 0
                 return
             if not flag_send:
-                if checking_send_success(start_time_sys,pumpout_OFF) == -1: #send fail
+                return_v = checking_send_success(start_time_sys,pumpout_OFF)
+                if return_v == -1: #send fail
                     flag_send = 1
                     return
-                elif checking_send_success(start_time_sys,pumpout_OFF) == 1: #send success
+                elif return_v == 1: #send success
                     flag_send = 1
-                elif checking_send_success(start_time_sys,pumpout_OFF) == 0: # not getting response
+                elif return_v == 0: # not getting response
                     return
                 
             
