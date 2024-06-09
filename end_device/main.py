@@ -68,8 +68,8 @@ def myProcessMess(feed_id, payload):
 
 class Sensor:
     def __init__(self) -> None:
-        self.humi = None
-        self.temp = None
+        self.humi = 0
+        self.temp = 0
 
 
     def to_dict(self):
@@ -89,8 +89,8 @@ def myProcessMess(feed_id, payload):
         print(payload)
         mess.append(payload)
 
-soil_temperature = [10, 3, 0, 6, 0, 1, 101, 112]
-soil_humidity = [10, 3, 0, 7, 0, 1, 52, 176]
+soil_temperature =[1, 3, 0, 6, 0, 1, 100, 11]
+soil_humidity = [1, 3, 0, 7, 0, 1, 53, 203]
 
 pumpin_ON       = [0x07, 0x06, 0x00, 0x00, 0x00, 0xFF, 0xC9, 0xEC]
 pumpin_OFF      = [0x07, 0x06, 0x00, 0x00, 0x00, 0x00, 0x89, 0xAC]
@@ -650,6 +650,7 @@ def crc16_modbus(data: list) -> list:
 def read_data_sensor():
     global sensor_state
     global state
+    global flag_sensor
     if(sensor_state == INIT):
         scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 5*10 , PERIOD = 0)
         sensor_state = READ_DATA
@@ -666,6 +667,7 @@ def read_data_sensor():
         
         if rs485.buffer.is_available():
             data = rs485.buffer.pop()
+            print(data_array)
             data_array = [b for b in data]
             crc = data_array[-2:]
             payload_array = data_array[:6]
@@ -677,14 +679,14 @@ def read_data_sensor():
                 sensor_data.humi  = data_array[rs485.buffer.size_of_object - 4] * 256 + data_array[rs485.buffer.size_of_object - 3]
             if(data_array[:4] == soil_temperature[:4]):
                 sensor_data.temp  = data_array[rs485.buffer.size_of_object - 4] * 256 + data_array[rs485.buffer.size_of_object - 3]
-            print(data_array)
+            
 
         if(flag_sensor):
             flag_sensor = 0
             if sensor_data.temp != 0  and sensor_data.humi != 0:
                 mqtt_client.publish_data("sensor",str(sensor_data))
 
-            scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 5*10 , PERIOD = 0)
+            scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 30*10 , PERIOD = 0)
             sensor_state = READ_DATA
 
 
