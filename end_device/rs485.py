@@ -53,13 +53,11 @@ class RS485Communication:
         bytesToRead = self.serial_connection.inWaiting()
         if (bytesToRead >= self.buffer.size_of_object):
             bytes_read = 0
-            while bytes_read < bytesToRead:
-
-                bytes = self.serial_connection.read(self.buffer.size_of_object)
-                # data_array = [b for b in bytes]
-                print(bytes)
-                self.buffer.push(bytes)
-                bytes_read =  bytes_read + self.buffer.size_of_object
+            bytes = self.serial_connection.read(self.buffer.size_of_object)
+            # data_array = [b for b in bytes]
+            print(bytes)
+            self.buffer.push(bytes)
+            bytes_read =  bytes_read + self.buffer.size_of_object
         
     def send_data(self,data):
         # print(data)
