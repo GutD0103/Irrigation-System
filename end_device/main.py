@@ -66,8 +66,7 @@ def myProcessMess(feed_id, payload):
         print(payload)
         mess.append(payload)
 
-def myProcessData(buffer):
-    pass
+
 
 relay_ON = [
     [1, 6, 0, 0, 0, 255, 201, 138   ],
@@ -154,8 +153,19 @@ def publish_log(time, mess):
     mylog.mess = mess
     mqtt_client.publish_data("log",str(mylog))
 
+
+def publish_state():
+    if myprogress.mixer1_percent > 100:
+        myprogress.mixer1_percent = 100
+    if myprogress.mixer2_percent > 100:
+        myprogress.mixer2_percent = 100
+    if myprogress.mixer3_percent > 100:
+        myprogress.mixer3_percent = 100
+    print(str(myprogress))
+    mqtt_client.publish_data("task",str(myprogress))
+
 def checking_send_success(start_time_send, value):
-    if(time.time() - start_time_sys > 10):
+    if(time.time() - start_time_send > 10):
         print("TIMEOUT")
         return -1
     if(rs485.buffer.is_available()):
@@ -503,7 +513,7 @@ def irrigation():
             print("SELECT AREA 3")
             area3 = -1
         
-        print(f"PUMP OUT START IN {duration}")
+        
         if flag_send:
             rs485.send_data(pumpout_ON)
             start_time_sys = time.time()
@@ -518,7 +528,7 @@ def irrigation():
                 flag_send = 1
             elif return_v == 0: # not getting response
                 return
-            
+        print(f"PUMP OUT START IN {duration / 10}")
         publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Start watering")
         myprogress.current_task = "pump out"
         state = STATE_PUMP_OUT
@@ -608,9 +618,7 @@ def irrigation():
             flag = 0
             state = STATE_IDLE
 
-def publish_state():
-    print(str(myprogress))
-    mqtt_client.publish_data("task",str(myprogress))
+
 
 def main():
 
