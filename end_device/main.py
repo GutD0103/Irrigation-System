@@ -218,7 +218,7 @@ def irrigation():
             start_time = datetime.strptime(start_time_str, "%H:%M")
             end_time = datetime.strptime(end_time_str, "%H:%M")
             duration = end_time - start_time
-            duration = (duration.total_seconds()) * 10
+            duration = (duration.total_seconds()) 
 
             start_time_sys = time.time()
             print(f"Process {data}")
@@ -378,8 +378,8 @@ def irrigation():
             print(f"MIXER 3 START IN {mixer3}")
             scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = mixer3*10 , PERIOD = 0)
             start_time_sys = time.time()
-            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Mixer 3 starts operating")
             myprogress.current_task = "mixer3"
+            publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Mixer 3 starts operating")
             state = STATE_WAIT_FOR_MIXER_3
         else:
             state = STATE_PUMP_IN
@@ -415,7 +415,7 @@ def irrigation():
     elif (state == STATE_PUMP_IN):
         if flag_send:
             rs485.send_data(pumpin_ON)
-            start_time_sys = time.time()
+            start_time_send = time.time()
             flag_send = 0
             return
         if not flag_send:
@@ -478,6 +478,7 @@ def irrigation():
             
             print("SELECT AREA 1")
             area1 = -1
+
         if(area2 > 0):
             if flag_send:
                 rs485.send_data(area2_ON)
@@ -495,6 +496,7 @@ def irrigation():
                     return
             print("SELECT AREA 2")
             area2 = -1
+
         if(area3 > 0):
             if flag_send:
                 rs485.send_data(area3_ON)
@@ -516,7 +518,7 @@ def irrigation():
         
         if flag_send:
             rs485.send_data(pumpout_ON)
-            start_time_sys = time.time()
+            start_time_send = time.time()
             flag_send = 0
             return
         if not flag_send:
@@ -528,22 +530,23 @@ def irrigation():
                 flag_send = 1
             elif return_v == 0: # not getting response
                 return
-        print(f"PUMP OUT START IN {duration / 10}")
+        print(f"PUMP OUT START IN {duration}")
         publish_log(datetime.now().strftime("%d/%m/%Y %H:%M"), f"{myprogress.label}:Start watering")
+        start_time_sys = time.time()
         myprogress.current_task = "pump out"
         state = STATE_PUMP_OUT
-        scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = duration , PERIOD = 0)
+        scheduler.SCH_Add_Task(pFunction = set_flag, DELAY = duration*10 , PERIOD = 0)
 
 
     elif (state == STATE_PUMP_OUT):
 
-        myprogress.pumpout  = round(((time.time() - start_time_sys) / (duration / 10)) * 100)
+        myprogress.pumpout  = round(((time.time() - start_time_sys) / (duration)) * 100)
 
         if(flag):
             if area1 == -1:
                 if flag_send:
                     rs485.send_data(area1_OFF)
-                    start_time_sys = time.time()
+                    start_time_send = time.time()
                     flag_send = 0
                     return
                 if not flag_send:
@@ -562,7 +565,7 @@ def irrigation():
             if area2 == -1:
                 if flag_send:
                     rs485.send_data(area2_OFF)
-                    start_time_sys = time.time()
+                    start_time_send = time.time()
                     flag_send = 0
                     return
                 if not flag_send:
@@ -580,7 +583,7 @@ def irrigation():
             if area3 == -1:
                 if flag_send:
                     rs485.send_data(area3_OFF)
-                    start_time_sys = time.time()
+                    start_time_send = time.time()
                     flag_send = 0
                     return
                 if not flag_send:
