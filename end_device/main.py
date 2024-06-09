@@ -663,7 +663,7 @@ def read_data_sensor():
                 rs485.send_data(soil_temperature)
                 print("send data")
                 sensor_state = PUBLISH_DATA
-            scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 5*10 , PERIOD = 0)
+            scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 2*10 , PERIOD = 0)
 
     elif(sensor_state == PUBLISH_DATA):
         
