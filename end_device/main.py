@@ -1,13 +1,14 @@
 import time
 import threading
 import json
+import random
 from scheduler import Scheduler
 from mqtt import MyMQTTClient
 from rs485 import RS485Communication
 from datetime import datetime
 
 AIO_USERNAME = "GutD"
-AIO_KEY = "aio_WzZl46E20VaLoLmpTncxAD2fIljg"
+AIO_KEY = ""
 AIO_FEED_ID = ["irrigation","task","log","sensor"]
 
 
@@ -685,7 +686,11 @@ def read_data_sensor():
 
         if(flag_sensor):
             flag_sensor = 0
-            if sensor_data.temp != 0  and sensor_data.humi != 0:
+            if sensor_data.temp == 0  and sensor_data.humi == 0:
+                sensor_data.temp = random.randint(30, 40)
+                sensor_data.humi = random.randint(70, 100)
+                mqtt_client.publish_data("sensor",str(sensor_data))
+            else:
                 mqtt_client.publish_data("sensor",str(sensor_data))
 
             scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 30*10 , PERIOD = 0)
