@@ -155,11 +155,14 @@ def publish_log(time, mess):
 def checking_send_success():
     start_time_sys = time.time()
     while 1:
-        if(time.time() - start_time_sys > 3):
+        if(time.time() - start_time_sys > 10):
             print("TIMEOUT")
             return False
         if(rs485.buffer.is_available()):
             data = rs485.buffer.pop()
+            print(data)
+            print(data[rs485.buffer.size_of_object - 4])
+            print(data[rs485.buffer.size_of_object - 3])
             value = data[rs485.buffer.size_of_object - 4] * 256 + data[rs485.buffer.size_of_object - 3]
             if(value > 0):
                 return True

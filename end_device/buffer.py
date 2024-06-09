@@ -10,9 +10,11 @@ class UtilsBuffer:
 
     def push(self, obj):
         if not isinstance(obj, bytes):
-            raise TypeError("Object must be of type bytes")
+            print("Object must be of type bytes")
+            return False
         if len(obj) != self.size_of_object:
-            raise ValueError("Object size must match buffer object size")
+            print("Object size must match buffer object size")
+            return False
         
         if self.is_full():
             return False
