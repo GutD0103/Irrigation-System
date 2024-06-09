@@ -8,7 +8,7 @@ from datetime import datetime
 
 AIO_USERNAME = "GutD"
 AIO_KEY = "aio_WzZl46E20VaLoLmpTncxAD2fIljg"
-AIO_FEED_ID = ["irrigation","task","log"]
+AIO_FEED_ID = ["irrigation","task","log","sensor"]
 
 
 mqtt_client = MyMQTTClient(AIO_USERNAME, AIO_KEY, AIO_FEED_ID)
@@ -66,33 +66,32 @@ def myProcessMess(feed_id, payload):
         print(payload)
         mess.append(payload)
 
+class Sensor:
+    def __init__(self) -> None:
+        self.humi = None
+        self.temp = None
 
 
-relay_ON = [
-    [1, 6, 0, 0, 0, 255, 201, 138   ],
-    [2, 6, 0, 0, 0, 255, 201, 185   ],
-    [3, 6, 0, 0, 0, 255, 200, 104   ],
-    [4, 6, 0, 0, 0, 255, 201, 223   ],
-    [5, 6, 0, 0, 0, 255, 200, 14    ],
-    [6, 6, 0, 0, 0, 255, 200, 61    ],
-    [7, 6, 0, 0, 0, 255, 201, 236   ],
-    [8, 6, 0, 0, 0, 255, 201, 19    ]
-]
-relay_OFF = [
-    [1, 6, 0, 0, 0, 0, 137, 202 ],
-    [2, 6, 0, 0, 0, 0, 137, 249 ],
-    [3, 6, 0, 0, 0, 0, 136, 40  ],
-    [4, 6, 0, 0, 0, 0, 137, 159 ],
-    [5, 6, 0, 0, 0, 0, 136, 78  ],
-    [6, 6, 0, 0, 0, 0, 136, 125 ],
-    [7, 6, 0, 0, 0, 0, 137, 172 ],
-    [8, 6, 0, 0, 0, 0, 137, 83  ]
-]
+    def to_dict(self):
+        return {
+            'humi': self.humi,
+            'temp': self.temp,
+        }
+
+    def to_json(self):
+        return json.dumps(self.to_dict(), indent=4)
+    
+    def __str__(self):
+        return self.to_json()
+    
+def myProcessMess(feed_id, payload):
+    if feed_id == "irrigation":
+        print(payload)
+        mess.append(payload)
 
 soil_temperature = [10, 3, 0, 6, 0, 1, 101, 112]
 soil_humidity = [10, 3, 0, 7, 0, 1, 52, 176]
-distance1_ON = [9, 3, 0, 5, 0, 1, 149, 67]
-distance2_ON = [12, 3, 0, 5, 0, 1, 149, 22]
+
 pumpin_ON       = [0x07, 0x06, 0x00, 0x00, 0x00, 0xFF, 0xC9, 0xEC]
 pumpin_OFF      = [0x07, 0x06, 0x00, 0x00, 0x00, 0x00, 0x89, 0xAC]
 pumpout_ON      = [0x08, 0x06, 0x00, 0x00, 0x00, 0xFF, 0xC9, 0x13]
@@ -621,6 +620,71 @@ def irrigation():
             flag = 0
             state = STATE_IDLE
 
+INIT = 0
+READ_DATA = 1
+PUBLISH_DATA = 2
+sensor_state = INIT
+sensor_data = Sensor()
+flag_sensor = 0
+
+def set_flag_sensor():
+    global flag_sensor
+    flag_sensor = 1
+
+def crc16_modbus(data: list) -> list:
+    crc = 0xFFFF  # Khởi tạo CRC với giá trị 0xFFFF
+    for pos in data:
+        crc ^= pos  # XOR byte hiện tại với CRC
+        for _ in range(8):  # Xử lý từng bit trong byte
+            if crc & 1:  # Nếu bit ít quan trọng nhất (LSB) là 1
+                crc >>= 1  # Dịch phải CRC một bit
+                crc ^= 0xA001  # XOR với đa thức 0xA001
+            else:  # Nếu LSB là 0
+                crc >>= 1  # Dịch phải CRC một bit
+    
+    crc_low = crc & 0xFF  # Byte thấp
+    crc_high = (crc >> 8) & 0xFF  # Byte cao
+    
+    return [crc_low, crc_high]  # Trả về mảng chứa byte thấp và byte cao
+
+def read_data_sensor():
+    if(sensor_state == INIT):
+        scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 5*10 , PERIOD = 0)
+        sensor_state = READ_DATA
+    elif(sensor_state == READ_DATA):
+        if(flag_send):
+            flag_sensor = 0
+            if(state == STATE_IDLE):
+                rs485.send_data(soil_humidity)
+                rs485.send_data(soil_temperature)
+                sensor_state = PUBLISH_DATA
+            scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 5*10 , PERIOD = 0)
+
+    elif(sensor_state == PUBLISH_DATA):
+        
+        if rs485.buffer.is_available():
+            data = rs485.buffer.pop()
+            data_array = [b for b in data]
+            crc = data_array[-2:]
+            payload_array = data_array[:6]
+
+            if crc != crc16_modbus(payload_array):
+                return
+            
+            if(data_array[:4] == soil_humidity[:4]):
+                sensor_data.humi  = data_array[rs485.buffer.size_of_object - 4] * 256 + data_array[rs485.buffer.size_of_object - 3]
+            if(data_array[:4] == soil_temperature[:4]):
+                sensor_data.temp  = data_array[rs485.buffer.size_of_object - 4] * 256 + data_array[rs485.buffer.size_of_object - 3]
+            print(data_array)
+
+        if(flag_sensor):
+            flag_sensor = 0
+            if sensor_data.temp != 0  and sensor_data.humi != 0:
+                mqtt_client.publish_data("sensor",str(sensor_data))
+
+            scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 5*10 , PERIOD = 0)
+            sensor_state = READ_DATA
+
 
 
 def main():
@@ -639,6 +703,7 @@ def main():
         scheduler.SCH_Dispatch_Tasks()
         rs485.read_serial()
         irrigation()
+        read_data_sensor()
         time.sleep(0.1)
     
 if __name__ == "__main__":
