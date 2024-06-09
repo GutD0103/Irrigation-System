@@ -161,6 +161,7 @@ def checking_send_success(start_time_sys, value):
         data = rs485.buffer.pop()
         data_array = [b for b in data]
         print(data_array)
+        print(value)
         if data_array == value:
             return 1
         return -1
