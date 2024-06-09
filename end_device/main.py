@@ -167,7 +167,7 @@ def publish_state():
     mqtt_client.publish_data("task",str(myprogress))
 
 def checking_send_success(start_time_send, value):
-    if(time.time() - start_time_send > 10):
+    if(time.time() - start_time_send > 1):
         print("TIMEOUT")
         return -1
     if(rs485.buffer.is_available()):
