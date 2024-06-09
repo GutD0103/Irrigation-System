@@ -692,6 +692,8 @@ def read_data_sensor():
                 sensor_data.humi = random.randint(70, 100)
                 mqtt_client.publish_data("sensor",str(sensor_data))
             else:
+                sensor_data.temp = random.randint(30, 40)
+                sensor_data.humi = random.randint(70, 100)
                 mqtt_client.publish_data("sensor",str(sensor_data))
 
             scheduler.SCH_Add_Task(pFunction = set_flag_sensor, DELAY = 30*10 , PERIOD = 0)
