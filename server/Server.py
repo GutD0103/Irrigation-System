@@ -18,7 +18,7 @@ CORS(app)
 FolderVideoPath = "video"
 
 ADAFRUIT_AIO_USERNAME = "GutD"
-ADAFRUIT_AIO_KEY      = "aio_WeLT92GhOSotza7eJPjopjlcAWHD"
+ADAFRUIT_AIO_KEY      = ""
 feed = ["irrigation"]
 my_scheduler = Scheduler(Database="schedule.db",DataTable="schedule",AIO_feed=feed,AIO_user=ADAFRUIT_AIO_USERNAME,AIO_key=ADAFRUIT_AIO_KEY)
 

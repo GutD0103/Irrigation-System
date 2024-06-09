@@ -161,6 +161,8 @@ def publish_state():
         myprogress.mixer2_percent = 100
     if myprogress.mixer3_percent > 100:
         myprogress.mixer3_percent = 100
+    if myprogress.pumpout > 100:
+        myprogress.pumpout = 100
     print(str(myprogress))
     mqtt_client.publish_data("task",str(myprogress))
 
@@ -709,7 +711,7 @@ def main():
     #mqtt init
     mqtt_client.start()
 
-    #scheduler.SCH_Add_Task(pFunction = publish_state, DELAY = 5*10 , PERIOD = 7.5*10)
+    scheduler.SCH_Add_Task(pFunction = publish_state, DELAY = 5*10 , PERIOD = 7.5*10)
 
 
     while True:
