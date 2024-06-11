@@ -26,81 +26,33 @@ Retrieves the schedule of streaming tasks.
 ### Response
 Success: Returns a JSON object containing the schedule details.
 
-    {
-        "Schedule": [
+        {
+            "Schedule": [
             {
-            "ID": 1,
-            "label": "VIPVCL",
-            "video_name": [
-            "ship.mp4"
-            ],
-            "duration": "2",
-            "start_date": "2024-04-09 00:00:00",
-            "until": "2024-04-16 00:00:00",
-            "start_time": "10:49",
-            "end_time": "13:00",
-            "onetime": "0"
-            },
-            {
-            "ID": 2,
-            "label": "VIDEOLIST3",
-            "video_name": [
-            "ship.mp4"
-            ],
-            "duration": 2,
-            "start_date": "2024-04-09 00:00:00",
-            "until": "2024-04-16 23:59:59",
-            "start_time": "10:49",
-            "end_time": "13:00",
-            "onetime": 0
-            },
-            {
-            "ID": 3,
-            "label": "VIDEOLIST2",
-            "video_name": [
-            "ship.mp4"
-            ],
-            "duration": 2,
-            "start_date": "2024-04-09 00:00:00",
-            "until": "2024-04-16 23:59:59",
-            "start_time": "10:49",
-            "end_time": "13:00",
-            "onetime": 0
-            }
-        ]
-    }
+                "ID": 8,
+                "label": "TEST",
+                "mixer": [0,50,50],
+                "area": ["1","2","3"],
+                "duration": 0,
+                "start_date": "2024-04-12",
+                "until": "2024-04-12",
+                "start_time": "10:00",
+                "end_time": "13:00",
+                "typetask": "onetime",
+                "days": []
+                }
+            ]
+        }
 
 ## Get Current Task
 Retrieves information about the current task.
-### Query Parameters:
-
-| Parameter| Requirement | Description |
-| --- | --- | --- |
-| `stream` | required, defaul = 1 | Choose a streaming channel. |
 ### Request
 
 `GET /get/currentTask`
 
-    localhost:5000//get/currentTask?stream=1
-
+    localhost:5000//get/currentTask
 ### Response
 Success: Returns a JSON object containing information about the current task.
-
-    {
-        "Current Task": {
-            "ID": 4,
-            "label": "VIDEOLIST2",
-            "video_name": [
-            "ship.mp4"
-            ],
-            "duration": 2,
-            "start_date": "2024-04-09 00:00:00",
-            "until": "2024-04-16 23:59:59",
-            "start_time": "12:14",
-            "end_time": "13:00",
-            "onetime": 0
-        }
-    }
 
 
 ## Add One Weekly Task.
@@ -111,8 +63,6 @@ Adds a one-time streaming task.
 
 | Parameter| Requirement | Description |
 | --- | --- | --- |
-| `stream` | required, defaul = 1 | Choose a streaming channel. |
-| `list` | required | Comma-separated list of video names. |
 | `duration` | optional, default: 1 | Interval in days between each live stream occurrence. |
 | `starttime` | optional, default: current time | Start time of the task (format: HH:MM). |
 | `endtime` | optional | End time of the task (format: HH:MM). |
@@ -120,12 +70,16 @@ Adds a one-time streaming task.
 | `until` | optional | End date for the recurring task (optional, format: YYYY-MM-DD). |
 | `label` | required| Name of this task. |
 | `days` | required, value: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]| Names of the days of the week. |
+| `mixer1` |required| Amount of solution for mixer1 |
+| `mixer2` |required| Amount of solution for mixer2  |
+| `mixer3` |required| Amount of solution for mixer3  |
+| `area` |required| Areas|
 
 ### Request
 
 `GET /schedule/addTask/weekly`
 
-    localhost:5000//schedule/addTask/weekly?stream=1&list=bird.mp4&starttime=10:00&endtime=13:00&startdate=2024-04-12&until=2024-04-15&label=LISTVIDEO2&days=mon,tue
+    localhost:5000//schedule/addTask/weekly?starttime=10:00&endtime=13:00&startdate=2024-04-12&until=2024-04-15&label=TEST&days=mon,tue&mixer1=50&mixer2=50&mixer3=50&area=1,2,3
 
 ### Response
 Success: Returns a success message along with the ID of the created task.
@@ -142,21 +96,21 @@ Adds a daily recurring streaming task.
 
 | Parameter| Requirement | Description |
 | --- | --- | --- |
-| `stream` | required, defaul = 1 | Choose a streaming channel. |
-| `list` | required | Comma-separated list of video names. |
 | `duration` | optional, default: 1 | Interval in days between each live stream occurrence. |
 | `starttime` | optional, default: current time | Start time of the task (format: HH:MM). |
 | `endtime` | optional | End time of the task (format: HH:MM). |
 | `startdate` | optional, default: current time | Start date of the task (format: YYYY-MM-DD). |
 | `until` | optional | End date for the recurring task (optional, format: YYYY-MM-DD). |
 | `label` | required| Name of this task. |
-
-
+| `mixer1` |required| Amount of solution for mixer1 |
+| `mixer2` |required| Amount of solution for mixer2  |
+| `mixer3` |required| Amount of solution for mixer3  |
+| `area` |required| Areas|
 ### Request
 
 `GET /schedule/addTask/daily`
 
-    localhost:5000//schedule/addTask/daily?stream=1&list=bird.mp4&duration=2&starttime=10:00&endtime=13:00&startdate=2024-04-12&until=2024-04-15&label=LISTVIDEO1
+    localhost:5000//schedule/addTask/daily?starttime=10:00&endtime=13:00&startdate=2024-04-12&until=2024-04-15&label=TEST&mixer1=50&mixer2=50&mixer3=50&area=1,2,3
 
 ### Response
 Success: Returns a success message along with the ID of the created task.
@@ -174,18 +128,20 @@ Adds a one-time streaming task.
 
 | Parameter| Requirement | Description |
 | --- | --- | --- |
-| `stream` | required, defaul = 1 | Choose a streaming channel. |
-| `list` | required | Comma-separated list of video names. |
 | `starttime` | optional, default: current time | Start time of the task (format: HH:MM). |
 | `endtime` | optional | End time of the task (format: HH:MM). |
 | `startdate` | optional, default: current time | Start date of the task (format: YYYY-MM-DD). |
 | `label` |required| Name of this task. |
+| `mixer1` |required| Amount of solution for mixer1 |
+| `mixer2` |required| Amount of solution for mixer2  |
+| `mixer3` |required| Amount of solution for mixer3  |
+| `area` |required| Areas|
 
 ### Request
 
 `GET /schedule/addTask/onetime`
 
-    localhost:5000//schedule/addTask/onetime?stream=1&list=bird.mp4&starttime=10:00&endtime=13:00&startdate=2024-04-12&label=LISTVIDEO2
+    localhost:5000//schedule/addTask/onetime?starttime=10:00&endtime=13:00&startdate=2024-04-12&label=TEST&mixer1=50&mixer2=50&mixer3=50&area=1,2,3
 
 ### Response
 Success: Returns a success message along with the ID of the created task.
