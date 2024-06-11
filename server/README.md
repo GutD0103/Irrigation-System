@@ -14,37 +14,14 @@ This API provides endpoints for managing tasks related to streaming, such as ret
 
 The REST API to the example app is described below.
 
-## Get list of Video
-Retrieves a list of video names availabel for streaming.
-### Request
-
-`GET /get/video`
-
-    localhost:5000//get/video
-
-### Response
-Success: Returns a JSON object containing the schedule details.
-
-    "Video name": [
-        "bird.mp4",
-        "horse.mp4",
-        "idle.mp4",
-        "ship.mp4"
-    ]
-
 ## Get Schedule
 Retrieves the schedule of streaming tasks.
 
-### Query Parameters:
-
-| Parameter| Requirement | Description |
-| --- | --- | --- |
-| `stream` | required, defaul = 1 | Choose a streaming channel. |
 ### Request
 
 `GET /get/schedule`
 
-    localhost:5000//get/schedule?stream=1
+    localhost:5000//get/schedule
 
 ### Response
 Success: Returns a JSON object containing the schedule details.
@@ -92,24 +69,6 @@ Success: Returns a JSON object containing the schedule details.
             }
         ]
     }
-## Get Stream Key
-Retrieves the stream key used for streaming.
-### Query Parameters:
-
-| Parameter| Requirement | Description |
-| --- | --- | --- |
-| `stream` | required, defaul = 1 | Choose a streaming channel. |
-
-### Request
-
-`GET /get/streamkey`
-
-    localhost:5000//get/streamkey?stream=1
-
-### Response
-Success: Returns a JSON object containing the stream key.
-
-    "Stream key": "live_1039732177_vlmsO93WolB9ky25idCbI6fnEBMnX233"
 
 ## Get Current Task
 Retrieves information about the current task.
@@ -143,57 +102,7 @@ Success: Returns a JSON object containing information about the current task.
         }
     }
 
-## Set Stream Key
-Sets the stream key for streaming.
-### Request
 
-`GET /set/streamkey`
-
-    localhost:5000//set/streamkey?streamkey=my_stream_key
-
-### Response
-Success: Returns a JSON object containing the stream key.
-
-    "success": {
-         "message": "Set stream key success"
-    }
-
-## Live Stream
-Initiates a live stream with provided video list
-
-### Query Parameters:
-| Parameter| Requirement | Description |
-| --- | --- | --- |
-| `list` | required | Comma-separated list of video names. |
-| `stream` | required, defaul = 1 | Choose a streaming channel. |
-### Request
-
-`GET /live?{list_video}`
-
-    localhost:5000//live?list=bird.mp4,ship.mp4&stream=1
-
-### Response
-Success: Returns a JSON object containing the stream key.
-    
-    "success": {
-        "message": "Live stream"
-    }
-
-## Stop Live Stream
-Stops the ongoing live stream.
-
-### Request
-
-`GET /stoplive`
-
-    localhost:5000//stoplive?stream=1
-
-### Response
-Success: Returns a JSON object containing the stream key.
-    
-    "success": {
-        "message": "Stop live stream"
-    }
 ## Add One Weekly Task.
 
 Adds a one-time streaming task.
@@ -288,13 +197,12 @@ Success: Returns a success message along with the ID of the created task.
 
 ## Delete Task
 
-Deletes a streaming task by ID.
+Deletes a task by ID.
 
 ### Query Parameters:
 
 | Parameter| Requirement | Description |
 | --- | --- | --- |
-| `stream` | required, defaul = 1 | Choose a streaming channel. |
 | `id` | optional | ID of the task to delete, or "all" to delete all tasks. |
 | `label` | optional| Name of this task. |
 
@@ -303,7 +211,7 @@ Deletes a streaming task by ID.
 
 `GET /schedule/deleteTask`
 
-    localhost:5000//schedule/deleteTask?stream=1&id=1&label=VIDEO1
+    localhost:5000//schedule/deleteTask?id=1&label=TEST
 
 ### Response
 Success: Returns a success message along with the ID of the created task.
@@ -313,164 +221,3 @@ Success: Returns a success message along with the ID of the created task.
        "ID": 1
      }
 
-# REST API FOR SETTING STREAM FOR POLE
-
-The REST API to the example app is described below.
-
-## Retrieve Pole Information
-Retrieves information about poles.
-### Request
-
-`GET /get/pole`
-
-    localhost:5000//get/pole
-
-### Response
-Returns JSON data containing information about poles.
-
-    {
-        "Pole infomation": [
-            {
-                "ID": 1,
-                "location": "123123:12321312",
-                "infor": "VIP",
-                "area": "HCMUT03",
-                "link": "https://www.twitch.tv/gutsssssssss9"
-            },
-            {
-                "ID": 2,
-                "location": "12:13",
-                "infor": "VIP",
-                "area": "HCMUT03",
-                "link": "https://www.twitch.tv/gutsssssssss9"
-            },
-            {
-                "ID": 3,
-                "location": "12:14",
-                "infor": null,
-                "area": "HCMUT03",
-                "link": "https://www.twitch.tv/gutsssssssss9"
-            },
-            {
-                "ID": 4,
-                "location": "13:13",
-                "infor": null,
-                "area": "HCMUT02",
-                "link": "https://www.twitch.tv/huynhnguyenhieunhan"
-            },
-            {
-                "ID": 5,
-                "location": "12:12",
-                "infor": null,
-                "area": "HCMUT02",
-                "link": "https://www.twitch.tv/huynhnguyenhieunhan"
-            },
-            {
-                "ID": 6,
-                "location": "12:17",
-                "infor": null,
-                "area": "HCMUT02",
-                "link": "https://www.twitch.tv/huynhnguyenhieunhan"
-            },
-            {
-                "ID": 7,
-                "location": "15:15",
-                "infor": null,
-                "area": "HCMUT01",
-                "link": "https://www.twitch.tv/huynhnguyenhieunhan"
-            },
-            {
-                "ID": 8,
-                "location": "12:65",
-                "infor": null,
-                "area": "HCMUT01",
-                "link": "https://www.twitch.tv/huynhnguyenhieunhan"
-            },
-            {
-                "ID": 9,
-                "location": "14:14",
-                "infor": null,
-                "area": "HCMUT01",
-                "link": "https://www.twitch.tv/huynhnguyenhieunhan"
-            },
-            {
-                "ID": 10,
-                "location": "32:32",
-                "infor": null,
-                "area": "HCMUT01",
-                "link": "https://www.twitch.tv/huynhnguyenhieunhan"
-            }
-        ]
-    }
-
-## Set Pole Area
-Sets the area of specified poles.
-### Query Parameters:
-
-| Parameter| Requirement | Description |
-| --- | --- | --- |
-| `ID` | required| Comma-separated list of pole IDs. |
-| `area` | required| New area to set for the poles. |
-
-### Request
-
-`GET /set/poleArea`
-
-    localhost:5000//set/poleArea?ID=7,8,9,10&area=HCMUT01
-
-### Response
-Success: Returns a success message if the operation is successful.
-
-    {
-        "success": {
-            "message": "Update success"
-        }
-    }
-
-##  Set Pole Link by ID
- Sets livestream link for specified poles by their IDs.
-### Query Parameters:
-
-| Parameter| Requirement | Description |
-| --- | --- | --- |
-| `ID` | required| Comma-separated list of pole IDs. |
-| `stream` | required| Specifies the livestream source (1 or 2).|
-
-### Request
-
-`GET /set/poleStream/ID`
-
-    localhost:5000//set/poleStream/ID?ID=1,2,3&stream=1
-
-### Response
-Success: Returns a success message if the operation is successful.
-
-    {
-        "success": {
-            "message": "Set stream"
-        }
-    }
-
-##  Set Pole Link by Area
-Sets livestream link for poles in a specific area.
-### Query Parameters:
-
-| Parameter| Requirement | Description |
-| --- | --- | --- |
-| `area` | required|  Area where poles are located. |
-| `stream` | required| Specifies the livestream source (1 or 2).|
-
-### Request
-
-`GET /set/poleStream/area`
-
-    localhost:5000//set/poleLink/area?area=HCMUT02&stream=1
-    
-### Response
-Success: Returns a success message if the operation is successful.
-
-    {
-        "success": {
-            "message": "Set stream"
-        }
-    }
