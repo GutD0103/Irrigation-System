@@ -8,7 +8,7 @@ This API provides endpoints for managing tasks related to streaming, such as ret
 
 ## Run the app
 
-    start run.bat
+    python Server.py
 
 # REST API FOR SCHEDULER
 
