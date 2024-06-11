@@ -15,7 +15,7 @@ This API provides endpoints for managing tasks related to streaming, such as ret
 The REST API to the example app is described below.
 
 ## Get Schedule
-Retrieves the schedule of streaming tasks.
+Retrieves the schedule of tasks.
 
 ### Request
 
